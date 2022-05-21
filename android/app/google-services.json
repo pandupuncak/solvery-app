@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "214377979732",
+    "project_id": "solvery-tukangin",
+    "storage_bucket": "solvery-tukangin.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:214377979732:android:af9a7b50a84f410e7132c1",
+        "android_client_info": {
+          "package_name": "com.example.test_drive"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "214377979732-lsec39fgq6nq0ee3nv3qvi4fhhit0r7m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAsDmPWMvBkOKcPuM2ECquACY9Xu8ZK1to"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "214377979732-lsec39fgq6nq0ee3nv3qvi4fhhit0r7m.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
