@@ -41,10 +41,13 @@ class _HomePageState extends State<HomePage> {
             color: Colors.white,
             child: Text('Search Bar'),
           ),
-          Row(
-            children: [
-              Container(child: Text("Cash"), padding: EdgeInsets.all(40))
-            ],
+          Container(
+            color: Colors.orange,
+            child: Row(
+              children: [
+                Container(child: Text("Cash"), padding: EdgeInsets.all(40))
+              ],
+            ),
           ),
           Padding(
             padding: const EdgeInsets.all(20.0),
@@ -53,7 +56,9 @@ class _HomePageState extends State<HomePage> {
               textAlign: TextAlign.center,
             ),
           ),
+          Text("Choose Service"),
           Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               InkWell(
                 child: Image.asset('assets/images/repair.png'),
@@ -68,6 +73,54 @@ class _HomePageState extends State<HomePage> {
                 child: Image.asset('assets/images/repair.png'),
               ),
             ],
+          ),
+          Text("Advertisement"),
+          SizedBox(
+            height: 100.0,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: <Widget>[
+                Container(
+                  width: 200.0,
+                  color: Colors.red,
+                ),
+                Container(
+                  width: 200.0,
+                  color: Colors.blue,
+                ),
+                Container(
+                  width: 200.0,
+                  color: Colors.green,
+                )
+              ],
+            ),
+          ),
+          Text("More Help"),
+          Container(
+            color: Colors.orange,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Container(
+                    width: 50.0,
+                    color: Colors.red,
+                    height: 40,
+                  ),
+                ),
+                Container(
+                  width: 50.0,
+                  color: Colors.blue,
+                  height: 40,
+                ),
+                Container(
+                  width: 50.0,
+                  color: Colors.green,
+                  height: 40,
+                )
+              ],
+            ),
           )
         ],
       ),
