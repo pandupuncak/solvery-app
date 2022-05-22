@@ -1,4 +1,5 @@
-import 'package:flutter/cupertino.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:date_field/date_field.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -7,6 +8,8 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:async';
 import 'dart:io';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location/location.dart';
 
 class RepairPage extends StatelessWidget {
   @override
@@ -16,6 +19,7 @@ class RepairPage extends StatelessWidget {
       title: appTitle,
       home: Scaffold(
         appBar: AppBar(
+          backgroundColor: Colors.white,
           leading: InkWell(
             onTap: () {
               Navigator.pop(context);
@@ -32,6 +36,18 @@ class RepairPage extends StatelessWidget {
   }
 }
 
+class _orderForm {
+  String? category;
+  String? description;
+  int? minimal_cost;
+  int? maximal_cost;
+  String? location;
+  String? day;
+  String? month;
+  String? year;
+  String? pathtoPhoto;
+}
+
 class MyStatefulWidget extends StatefulWidget {
   const MyStatefulWidget({Key? key}) : super(key: key);
 
@@ -41,17 +57,44 @@ class MyStatefulWidget extends StatefulWidget {
 
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  //Form Data
+  final TextEditingController category_controller = TextEditingController();
+  final TextEditingController desc_controller = TextEditingController();
+  final TextEditingController mincost_controller = TextEditingController();
+  final TextEditingController maxcost_controller = TextEditingController();
+  double longitude_controller = 0;
+  double latitude_controller = 0;
+  DateTime? deadline;
+
   String selectedValue = "Electrician";
   @override
   final storageref = FirebaseStorage.instance.ref();
   // final imagesRef = storageref.child("images");
   // final orderImgRef = storageref.child("images/orders/");
 
+  // PHOTO UPLOADS
+
   File? _photo;
 
-  Future UploadFile() async {
-    final appDocDir = await getApplicationDocumentsDirectory();
-    final filePath = "${appDocDir.absolute}/path/to/mountains.jpg";
+  _getFromGallery() async {
+    PickedFile? pickedFile = await ImagePicker().getImage(
+      source: ImageSource.gallery,
+      maxWidth: 1800,
+      maxHeight: 1800,
+    );
+    if (pickedFile != null) {
+      File imageFile = File(pickedFile.path);
+      _photo = imageFile;
+    }
+    print(_photo?.path);
+    _addImageWidget();
+    UploadFile();
+  }
+
+  UploadFile() async {
+    final appDocDir = _photo; //await getApplicationDocumentsDirectory();
+    final filePath = "images/${appDocDir}.jpg";
     final file = File(filePath);
 
     // Create the file metadata
@@ -61,9 +104,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     final storageRef = FirebaseStorage.instance.ref();
 
     // Upload file and metadata to the path 'images/mountains.jpg'
-    final uploadTask = storageRef
-        .child("images/path/to/mountains.jpg")
-        .putFile(file, metadata);
+    final uploadTask = storageRef.child(filePath).putFile(appDocDir!, metadata);
 
     // Listen for state changes, errors, and completion of the upload.
     uploadTask.snapshotEvents.listen((TaskSnapshot taskSnapshot) {
@@ -87,6 +128,44 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
           // ...
           break;
       }
+    });
+  }
+
+  List<Widget> _imageList = [];
+
+  void _addImageWidget() {
+    setState(() {
+      _imageList.add(_image());
+    });
+  }
+
+  Widget _image() {
+    return Image.file(_photo!);
+  }
+
+  //LOCATION GETTERS
+  GoogleMapController? _controller;
+  LocationData? locationSent;
+  Location currentLocation = Location();
+  Set<Marker> _markers = {};
+  void getLocation() async {
+    var location = await currentLocation.getLocation();
+    currentLocation.onLocationChanged.listen((LocationData loc) {
+      _controller
+          ?.animateCamera(CameraUpdate.newCameraPosition(new CameraPosition(
+        target: LatLng(loc.latitude ?? 0.0, loc.longitude ?? 0.0),
+        zoom: 12.0,
+      )));
+      print(loc.latitude);
+      locationSent = loc;
+      longitude_controller = loc.longitude!;
+      latitude_controller = loc.latitude!;
+      print(loc.longitude);
+      setState(() {
+        _markers.add(Marker(
+            markerId: MarkerId('Home'),
+            position: LatLng(loc.latitude ?? 0.0, loc.longitude ?? 0.0)));
+      });
     });
   }
 
@@ -123,6 +202,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
               }
               return null;
             },
+            controller: desc_controller,
           ),
           Text("Cost Range"),
           Row(
@@ -133,6 +213,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                   decoration: const InputDecoration(
                     hintText: "Minimal",
                   ),
+                  controller: mincost_controller,
                 ),
               ),
               Text("S/D"),
@@ -142,13 +223,37 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                   decoration: const InputDecoration(
                     hintText: "Maksimal",
                   ),
+                  controller: maxcost_controller,
                 ),
               ),
             ],
           ),
           Text("Work Location"),
-          TextFormField(
-            decoration: const InputDecoration(hintText: "LocationStandIn"),
+          Stack(
+            children: [
+              Container(
+                height: 200,
+                width: 500,
+                child: GoogleMap(
+                  zoomControlsEnabled: false,
+                  initialCameraPosition: CameraPosition(
+                    target: LatLng(-6.890450, 107.610406),
+                    zoom: 12.0,
+                  ),
+                  onMapCreated: (controller) => _controller,
+                  markers: _markers,
+                ),
+              ),
+              FloatingActionButton(
+                child: Icon(
+                  Icons.location_searching,
+                  color: Colors.orange,
+                ),
+                onPressed: () {
+                  getLocation();
+                },
+              )
+            ],
           ),
           Text("Deadline"),
           DateTimeFormField(
@@ -159,25 +264,107 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
               suffixIcon: Icon(Icons.event_note),
               labelText: 'Only time',
             ),
-            mode: DateTimeFieldPickerMode.time,
+            mode: DateTimeFieldPickerMode.date,
             autovalidateMode: AutovalidateMode.always,
             validator: (e) =>
                 (e?.day ?? 0) == 1 ? 'Please not the first day' : null,
             onDateSelected: (DateTime value) {
               print(value);
+              deadline = value;
             },
+          ),
+          Text("Upload photo"),
+          Row(
+            children: [
+              InkWell(
+                child: Icon(
+                  Icons.browse_gallery,
+                  size: 100,
+                ),
+                onTap: () {
+                  _getFromGallery();
+                  // print(_photo?.path);
+                  // _addImageWidget();
+                  //UploadFile();
+                },
+              ),
+              SizedBox(
+                height: 100,
+                width: 200,
+                child: ListView.builder(
+                    itemCount: _imageList.length,
+                    scrollDirection: Axis.horizontal,
+                    itemBuilder: ((context, index) {
+                      return _imageList[index];
+                    })),
+              ),
+            ],
           ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16.0),
             child: ElevatedButton(
               onPressed: () {
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text("Success"),
+                        content: SingleChildScrollView(
+                          child: ListBody(children: const <Widget>[
+                            Text(
+                                "After you submit, you won't be able to edit your order"),
+                            Text("Publish your order?")
+                          ]),
+                        ),
+                        actions: <Widget>[
+                          TextButton(
+                            child: Text("Yes"),
+                            onPressed: (() {
+                              if (_formKey.currentState!.validate()) {
+                                // Process data.
+                                FirebaseFirestore.instance
+                                    .collection('open-orders')
+                                    .add({
+                                  "timestamp": DateTime.now().toString(),
+                                  "user":
+                                      FirebaseAuth.instance.currentUser?.uid,
+                                  "user_name": FirebaseAuth
+                                      .instance.currentUser?.displayName,
+                                  "category": selectedValue,
+                                  "description": desc_controller.text,
+                                  "cost": {
+                                    "minimal_cost": mincost_controller.text,
+                                    "maximal_cost": maxcost_controller.text,
+                                  },
+                                  "location": {
+                                    "value": locationSent.toString(),
+                                    "longitude": longitude_controller,
+                                    "latitude": latitude_controller
+                                  },
+                                  "deadline": {
+                                    "value": deadline?.toString(),
+                                    "day": deadline?.day,
+                                    "month": deadline?.month,
+                                    "year": deadline?.year
+                                  },
+                                  "order_image": "images/${_photo}.jpg",
+                                  "status": "open",
+                                });
+                                Navigator.pushNamed(context, '/home');
+                              }
+                            }),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, 'Cancel'),
+                            child: const Text('Cancel'),
+                          ),
+                        ],
+                      );
+                    });
                 // Validate will return true if the form is valid, or false if
                 // the form is invalid.
-                if (_formKey.currentState!.validate()) {
-                  // Process data.
-                }
               },
-              child: const Text('Submit'),
+              child: const Text('Publish Now'),
             ),
           ),
         ],
@@ -185,50 +372,3 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     );
   }
 }
-
-// class RepairPage extends StatefulWidget {
-//   @override
-//   State<RepairPage> createState() => _RepairPageState();
-// }
-
-// class _RepairPageState extends State<RepairPage> {
-//   @override
-//   Widget build(BuildContext context) {
-//     String dropdownValue = 'Electrician';
-//     return Center(
-//       child: Scaffold(
-//         appBar: new AppBar(
-          // leading: InkWell(
-          //   onTap: () {
-          //     Navigator.pop(context);
-          //   },
-          //   child: Icon(
-          //     Icons.arrow_back,
-          //     color: Color.fromARGB(255, 242, 146, 2),
-          //   ),
-//           ),
-//         ),
-//         body: Column(children: [
-//           Text("Category"),
-//           DropdownButton<String>(
-//             value: dropdownValue,
-//             items: <String>['Electrician', 'Pipa', 'Bangunan', 'Cat']
-//                 .map<DropdownMenuItem<String>>((String value) {
-//               return DropdownMenuItem<String>(
-//                 value: value,
-//                 child: Text(value),
-//               );
-//             }).toList(),
-//             onChanged: (String? newValue) {
-//               setState(() {
-//                 dropdownValue = newValue!;
-//               });
-//             },
-//           ),
-//           Text('Description'),
-          
-//         ]),
-//       ),
-//     );
-//   }
-// }
