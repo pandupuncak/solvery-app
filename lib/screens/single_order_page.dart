@@ -7,9 +7,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:test_drive/providers/orders.dart';
 import 'dart:async';
 
-class OrdersPage extends StatefulWidget {
+class SingleOrderPage extends StatefulWidget {
   @override
-  State<OrdersPage> createState() => _OrdersPageState();
+  State<SingleOrderPage> createState() => _SingleOrderPageState();
 }
 
 class DynamicItem extends StatelessWidget {
@@ -18,9 +18,7 @@ class DynamicItem extends StatelessWidget {
   }
 }
 
-class _OrdersPageState extends State<OrdersPage> {
-  List<Object> _ordersHistory = [];
-
+class _SingleOrderPageState extends State<SingleOrderPage> {
   CollectionReference orders =
       FirebaseFirestore.instance.collection('open-orders');
 
@@ -46,12 +44,14 @@ class _OrdersPageState extends State<OrdersPage> {
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
         child: Center(
-          child: StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
+          child: FutureBuilder<QuerySnapshot>(
+              future: FirebaseFirestore.instance
                   .collection('open-orders')
                   .where('user',
                       isEqualTo: FirebaseAuth.instance.currentUser?.uid)
-                  .snapshots(),
+                  .orderBy('timestamp', descending: true)
+                  .limit(1)
+                  .get(),
               builder: (BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (!snapshot.hasData) {
@@ -63,9 +63,23 @@ class _OrdersPageState extends State<OrdersPage> {
                 return ListView(
                   children: snapshot.data!.docs.map((document) {
                     return Container(
-                        child: Row(
+                        child: Column(
                       children: [
-                        Text("Description: ${document['description']}")
+                        ElevatedButton(
+                            onPressed: () {}, child: Text("SELECT TUKANG")),
+                        Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child:
+                              Text("Description: ${document['description']}"),
+                        ),
+                        Text("Deadline"),
+                        Text("${document['deadline']['value']}"),
+                        Text("Location"),
+                        Text("${document['location']}"),
+                        Text("Cost Range"),
+                        Text(
+                            "${document['cost']['minimal_cost']} - ${document['cost']['maximal_cost']}"),
+                        Text("Order Picture")
                       ],
                     ));
                   }).toList(),
@@ -73,21 +87,6 @@ class _OrdersPageState extends State<OrdersPage> {
               }),
         ),
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {
-      //     Navigator.push(
-      //       context,
-      //       MaterialPageRoute(
-      //         builder: (context) => AddView(),
-      //       ),
-      //     );
-      //   },
-      //   backgroundColor: Colors.blue,
-      //   child: Icon(
-      //     Icons.add,
-      //     color: Colors.white,
-      //   ),
-      // ),
     );
   }
 }

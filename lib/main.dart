@@ -10,8 +10,10 @@ import 'package:provider/provider.dart';
 import 'package:test_drive/providers/authentication.dart';
 import 'package:test_drive/screens/authentication_page.dart';
 import 'package:test_drive/screens/home_page.dart';
+import 'package:test_drive/screens/orders_page.dart';
 import 'package:test_drive/screens/registration_page.dart';
 import 'package:test_drive/screens/repair_page.dart';
+import 'package:test_drive/screens/single_order_page.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
@@ -51,7 +53,9 @@ class MyApp extends StatelessWidget {
           '/auth': (BuildContext context) => new SignInPage(),
           '/register': ((BuildContext context) => new RegistrationPage()),
           '/home': (BuildContext context) => new HomePage(),
-          '/repair': (BuildContext context) => new RepairPage()
+          '/repair': (BuildContext context) => new RepairPage(),
+          '/orders': (BuildContext context) => new OrdersPage(),
+          '/order': (BuildContext context) => new SingleOrderPage(),
         },
       ),
     );

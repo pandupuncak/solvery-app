@@ -73,21 +73,6 @@ class _OrdersPageState extends State<OrdersPage> {
               }),
         ),
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {
-      //     Navigator.push(
-      //       context,
-      //       MaterialPageRoute(
-      //         builder: (context) => AddView(),
-      //       ),
-      //     );
-      //   },
-      //   backgroundColor: Colors.blue,
-      //   child: Icon(
-      //     Icons.add,
-      //     color: Colors.white,
-      //   ),
-      // ),
     );
   }
 }

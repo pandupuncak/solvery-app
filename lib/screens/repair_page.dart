@@ -156,11 +156,11 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
         target: LatLng(loc.latitude ?? 0.0, loc.longitude ?? 0.0),
         zoom: 12.0,
       )));
-      print(loc.latitude);
+      // print(loc.latitude);
       locationSent = loc;
       longitude_controller = loc.longitude!;
       latitude_controller = loc.latitude!;
-      print(loc.longitude);
+      // print(loc.longitude);
       setState(() {
         _markers.add(Marker(
             markerId: MarkerId('Home'),
@@ -350,7 +350,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                                   "order_image": "images/${_photo}.jpg",
                                   "status": "open",
                                 });
-                                Navigator.pushNamed(context, '/home');
+                                Navigator.pushNamed(context, '/order');
                               }
                             }),
                           ),
