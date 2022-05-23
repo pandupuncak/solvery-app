@@ -9,10 +9,12 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:test_drive/providers/authentication.dart';
 import 'package:test_drive/screens/authentication_page.dart';
+import 'package:test_drive/screens/design_review_page.dart';
 import 'package:test_drive/screens/home_page.dart';
 import 'package:test_drive/screens/orders_page.dart';
 import 'package:test_drive/screens/registration_page.dart';
 import 'package:test_drive/screens/repair_page.dart';
+import 'package:test_drive/screens/review_page.dart';
 import 'package:test_drive/screens/single_order_page.dart';
 import 'firebase_options.dart';
 
@@ -56,6 +58,8 @@ class MyApp extends StatelessWidget {
           '/repair': (BuildContext context) => new RepairPage(),
           '/orders': (BuildContext context) => new OrdersPage(),
           '/order': (BuildContext context) => new SingleOrderPage(),
+          '/design': (BuildContext context) => new DesignReviewPage(),
+          //'/review': (BuildContext context) => new ReviewPage(reviews: null),
         },
       ),
     );

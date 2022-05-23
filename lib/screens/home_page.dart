@@ -27,6 +27,7 @@ class _HomePageState extends State<HomePage> {
         leading: InkWell(
           onTap: () {
             context.read<Authentication>().signOut();
+            Navigator.pushNamed(context, '/auth');
           },
           child: Icon(
             Icons.arrow_back,
@@ -70,7 +71,10 @@ class _HomePageState extends State<HomePage> {
                 child: Image.asset('assets/images/build.png'),
               ),
               InkWell(
-                child: Image.asset('assets/images/repair.png'),
+                child: Image.asset('assets/images/design.png'),
+                onTap: () {
+                  Navigator.pushNamed(context, '/design');
+                },
               ),
             ],
           ),

@@ -178,7 +178,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
           Text("Category"),
           DropdownButtonFormField<String>(
             value: selectedValue,
-            items: <String>['Electrician', 'Pipa', 'Bangunan', 'Cat']
+            items: <String>['Electrician', 'Waterworks', 'Buildings', 'Paint']
                 .map<DropdownMenuItem<String>>((String value) {
               return DropdownMenuItem<String>(
                 value: value,
@@ -247,7 +247,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
               FloatingActionButton(
                 child: Icon(
                   Icons.location_searching,
-                  color: Colors.orange,
+                  color: Colors.white,
                 ),
                 onPressed: () {
                   getLocation();

@@ -29,7 +29,7 @@ class Authentication {
     try {
       await _firebaseAuth.createUserWithEmailAndPassword(
           email: email, password: password);
-      return "Signed Un";
+      return "Signed Up";
     } on FirebaseAuthException catch (e) {
       //return e.message;
       print("Failed with error code: ${e.code}");

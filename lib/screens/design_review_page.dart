@@ -7,9 +7,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:test_drive/providers/orders.dart';
 import 'dart:async';
 
-class OrdersPage extends StatefulWidget {
+class DesignReviewPage extends StatefulWidget {
   @override
-  State<OrdersPage> createState() => _OrdersPageState();
+  State<DesignReviewPage> createState() => _DesignReviewPageState();
 }
 
 class DynamicItem extends StatelessWidget {
@@ -18,7 +18,7 @@ class DynamicItem extends StatelessWidget {
   }
 }
 
-class _OrdersPageState extends State<OrdersPage> {
+class _DesignReviewPageState extends State<DesignReviewPage> {
   List<Object> _ordersHistory = [];
 
   CollectionReference orders =
@@ -38,6 +38,7 @@ class _OrdersPageState extends State<OrdersPage> {
             color: Color.fromARGB(255, 242, 146, 2),
           ),
         ),
+        title: Text("Design Inspiration"),
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -47,11 +48,8 @@ class _OrdersPageState extends State<OrdersPage> {
         width: MediaQuery.of(context).size.width,
         child: Center(
           child: StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection('open-orders')
-                  .where('user',
-                      isEqualTo: FirebaseAuth.instance.currentUser?.uid)
-                  .snapshots(),
+              stream:
+                  FirebaseFirestore.instance.collection('reviews').snapshots(),
               builder: (BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (!snapshot.hasData) {
@@ -63,16 +61,46 @@ class _OrdersPageState extends State<OrdersPage> {
                 return ListView(
                   children: snapshot.data!.docs.map((document) {
                     return Container(
-                        child: Row(
-                      children: [
-                        Text("Description: ${document['description']}")
-                      ],
-                    ));
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Text("${document['user_name']}"),
+                              //Text(document['timestamp'])
+                            ],
+                          ),
+                          Text(document['review_title']),
+                          Text(document['review_text']),
+                          Text(document['tukang_name'])
+                        ],
+                      ),
+                      padding: EdgeInsets.all(15.0),
+                      decoration: BoxDecoration(
+                          color: Color.fromARGB(255, 170, 217, 255),
+                          border: Border.all(
+                              color: Color.fromARGB(255, 8, 38, 63),
+                              width: 3.0)),
+                    );
                   }).toList(),
                 );
               }),
         ),
       ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {
+      //     Navigator.push(
+      //       context,
+      //       MaterialPageRoute(
+      //         builder: (context) => AddView(),
+      //       ),
+      //     );
+      //   },
+      //   backgroundColor: Colors.blue,
+      //   child: Icon(
+      //     Icons.add,
+      //     color: Colors.white,
+      //   ),
+      // ),
     );
   }
 }
