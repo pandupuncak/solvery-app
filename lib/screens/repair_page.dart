@@ -10,6 +10,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:test_drive/providers/palette.dart';
 
 class RepairPage extends StatelessWidget {
   @override
@@ -145,6 +146,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
 
   //LOCATION GETTERS
   GoogleMapController? _controller;
+  Marker? _point;
   LocationData? locationSent;
   Location currentLocation = Location();
   Set<Marker> _markers = {};
@@ -162,6 +164,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
       latitude_controller = loc.latitude!;
       // print(loc.longitude);
       setState(() {
+        _markers.clear();
         _markers.add(Marker(
             markerId: MarkerId('Home'),
             position: LatLng(loc.latitude ?? 0.0, loc.longitude ?? 0.0)));
@@ -169,205 +172,328 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     });
   }
 
+  void _addMarker(LatLng pos) {
+    setState(
+      () {
+        _point = null;
+        _markers.clear();
+        _point = Marker(
+          markerId: const MarkerId('point'),
+          infoWindow: const InfoWindow(title: 'point'),
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+          position: pos,
+        );
+        _markers.add(_point!);
+        longitude_controller = pos.longitude;
+        latitude_controller = pos.latitude;
+      },
+    );
+  }
+
   Widget build(BuildContext context) {
     return Form(
       key: _formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text("Category"),
-          DropdownButtonFormField<String>(
-            value: selectedValue,
-            items: <String>['Electrician', 'Waterworks', 'Buildings', 'Paint']
-                .map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(value),
-              );
-            }).toList(),
-            onChanged: (String? newValue) {
-              setState(() {
-                selectedValue = newValue!;
-              });
-            },
-          ),
-          Text("Description"),
-          TextFormField(
-            decoration: const InputDecoration(
-              hintText: 'Describe your problem',
-            ),
-            validator: (String? value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter some text';
-              }
-              return null;
-            },
-            controller: desc_controller,
-          ),
-          Text("Cost Range"),
-          Row(
-            children: [
-              Flexible(
+      child: Container(
+        alignment: Alignment.center,
+        width: 382,
+        padding: EdgeInsets.all(10),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  "Category",
+                  style: TextStyle(
+                    color: Palette.darkred,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: DropdownButtonFormField<String>(
+                  value: selectedValue,
+                  items: <String>[
+                    'Electrician',
+                    'Waterworks',
+                    'Buildings',
+                    'Paint'
+                  ].map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      selectedValue = newValue!;
+                    });
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  "Description",
+                  style: TextStyle(
+                    color: Palette.darkred,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
-                  keyboardType: TextInputType.number,
                   decoration: const InputDecoration(
-                    hintText: "Minimal",
+                    hintText: 'Describe your problem',
                   ),
-                  controller: mincost_controller,
+                  validator: (String? value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter some text';
+                    }
+                    return null;
+                  },
+                  controller: desc_controller,
                 ),
               ),
-              Text("S/D"),
-              Flexible(
-                child: TextFormField(
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    hintText: "Maksimal",
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  "Cost Range",
+                  style: TextStyle(
+                    color: Palette.darkred,
+                    fontWeight: FontWeight.w700,
                   ),
-                  controller: maxcost_controller,
                 ),
               ),
-            ],
-          ),
-          Text("Work Location"),
-          Stack(
-            children: [
-              Container(
-                height: 200,
-                width: 500,
-                child: GoogleMap(
-                  zoomControlsEnabled: false,
-                  initialCameraPosition: CameraPosition(
-                    target: LatLng(-6.890450, 107.610406),
-                    zoom: 12.0,
-                  ),
-                  onMapCreated: (controller) => _controller,
-                  markers: _markers,
-                ),
-              ),
-              FloatingActionButton(
-                child: Icon(
-                  Icons.location_searching,
-                  color: Colors.white,
-                ),
-                onPressed: () {
-                  getLocation();
-                },
-              )
-            ],
-          ),
-          Text("Deadline"),
-          DateTimeFormField(
-            decoration: const InputDecoration(
-              hintStyle: TextStyle(color: Colors.black45),
-              errorStyle: TextStyle(color: Colors.redAccent),
-              border: OutlineInputBorder(),
-              suffixIcon: Icon(Icons.event_note),
-              labelText: 'Only time',
-            ),
-            mode: DateTimeFieldPickerMode.date,
-            autovalidateMode: AutovalidateMode.always,
-            validator: (e) =>
-                (e?.day ?? 0) == 1 ? 'Please not the first day' : null,
-            onDateSelected: (DateTime value) {
-              print(value);
-              deadline = value;
-            },
-          ),
-          Text("Upload photo"),
-          Row(
-            children: [
-              InkWell(
-                child: Icon(
-                  Icons.browse_gallery,
-                  size: 100,
-                ),
-                onTap: () {
-                  _getFromGallery();
-                  // print(_photo?.path);
-                  // _addImageWidget();
-                  //UploadFile();
-                },
-              ),
-              SizedBox(
-                height: 100,
-                width: 200,
-                child: ListView.builder(
-                    itemCount: _imageList.length,
-                    scrollDirection: Axis.horizontal,
-                    itemBuilder: ((context, index) {
-                      return _imageList[index];
-                    })),
-              ),
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16.0),
-            child: ElevatedButton(
-              onPressed: () {
-                showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Text("Success"),
-                        content: SingleChildScrollView(
-                          child: ListBody(children: const <Widget>[
-                            Text(
-                                "After you submit, you won't be able to edit your order"),
-                            Text("Publish your order?")
-                          ]),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: [
+                    Flexible(
+                      child: TextFormField(
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                          hintText: "Minimal",
                         ),
-                        actions: <Widget>[
-                          TextButton(
-                            child: Text("Yes"),
-                            onPressed: (() {
-                              if (_formKey.currentState!.validate()) {
-                                // Process data.
-                                FirebaseFirestore.instance
-                                    .collection('open-orders')
-                                    .add({
-                                  "timestamp": DateTime.now().toString(),
-                                  "user":
-                                      FirebaseAuth.instance.currentUser?.uid,
-                                  "user_name": FirebaseAuth
-                                      .instance.currentUser?.displayName,
-                                  "category": selectedValue,
-                                  "description": desc_controller.text,
-                                  "cost": {
-                                    "minimal_cost": mincost_controller.text,
-                                    "maximal_cost": maxcost_controller.text,
-                                  },
-                                  "location": {
-                                    "value": locationSent.toString(),
-                                    "longitude": longitude_controller,
-                                    "latitude": latitude_controller
-                                  },
-                                  "deadline": {
-                                    "value": deadline?.toString(),
-                                    "day": deadline?.day,
-                                    "month": deadline?.month,
-                                    "year": deadline?.year
-                                  },
-                                  "order_image": "images/${_photo}.jpg",
-                                  "status": "open",
-                                });
-                                Navigator.pushNamed(context, '/order');
-                              }
+                        controller: mincost_controller,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        "S/D",
+                        style: TextStyle(
+                          color: Palette.darkred,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    Flexible(
+                      child: TextFormField(
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                          hintText: "Maksimal",
+                        ),
+                        controller: maxcost_controller,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  "Work Location",
+                  style: TextStyle(
+                    color: Palette.darkred,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Stack(
+                  children: [
+                    Container(
+                      height: 400,
+                      width: 500,
+                      child: GoogleMap(
+                        zoomControlsEnabled: true,
+                        initialCameraPosition: CameraPosition(
+                          target: LatLng(-6.890450, 107.610406),
+                          zoom: 10.0,
+                        ),
+                        onMapCreated: (controller) => _controller,
+                        markers: _markers,
+                        onLongPress: _addMarker,
+                      ),
+                    ),
+                    FloatingActionButton(
+                      child: Icon(
+                        Icons.location_searching,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {
+                        getLocation();
+                      },
+                    )
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  "Deadline",
+                  style: TextStyle(
+                    color: Palette.darkred,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              DateTimeFormField(
+                decoration: const InputDecoration(
+                  hintStyle: TextStyle(color: Colors.black45),
+                  errorStyle: TextStyle(color: Colors.redAccent),
+                  border: OutlineInputBorder(),
+                  suffixIcon: Icon(Icons.event_note),
+                  labelText: 'Only time',
+                ),
+                mode: DateTimeFieldPickerMode.date,
+                autovalidateMode: AutovalidateMode.always,
+                validator: (e) =>
+                    (e?.day ?? 0) == 1 ? 'Please not the first day' : null,
+                onDateSelected: (DateTime value) {
+                  print(value);
+                  deadline = value;
+                },
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  "Upload photo",
+                  style: TextStyle(
+                    color: Palette.darkred,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: [
+                    InkWell(
+                      child: Icon(
+                        Icons.browse_gallery,
+                        size: 100,
+                      ),
+                      onTap: () {
+                        _getFromGallery();
+                        // print(_photo?.path);
+                        // _addImageWidget();
+                        //UploadFile();
+                      },
+                      customBorder: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                    ),
+                    Container(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: SizedBox(
+                          height: 100,
+                          width: 200,
+                          child: ListView.builder(
+                            itemCount: _imageList.length,
+                            scrollDirection: Axis.horizontal,
+                            itemBuilder: ((context, index) {
+                              return _imageList[index];
                             }),
                           ),
-                          TextButton(
-                            onPressed: () => Navigator.pop(context, 'Cancel'),
-                            child: const Text('Cancel'),
-                          ),
-                        ],
-                      );
-                    });
-                // Validate will return true if the form is valid, or false if
-                // the form is invalid.
-              },
-              child: const Text('Publish Now'),
-            ),
+                        ),
+                      ),
+                      decoration: BoxDecoration(
+                          border: Border.all(
+                        color: Palette.darkred,
+                        style: BorderStyle.solid,
+                      )),
+                      padding: EdgeInsets.all(10),
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: ElevatedButton(
+                  onPressed: () {
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text("Success"),
+                            content: SingleChildScrollView(
+                              child: ListBody(children: const <Widget>[
+                                Text(
+                                    "After you submit, you won't be able to edit your order"),
+                                Text("Publish your order?")
+                              ]),
+                            ),
+                            actions: <Widget>[
+                              TextButton(
+                                child: Text("Yes"),
+                                onPressed: (() {
+                                  if (_formKey.currentState!.validate()) {
+                                    // Process data.
+                                    FirebaseFirestore.instance
+                                        .collection('open-orders')
+                                        .add({
+                                      "timestamp": DateTime.now().toString(),
+                                      "user": FirebaseAuth
+                                          .instance.currentUser?.uid,
+                                      "user_name": FirebaseAuth
+                                          .instance.currentUser?.displayName,
+                                      "category": selectedValue,
+                                      "description": desc_controller.text,
+                                      "cost": {
+                                        "minimal_cost": mincost_controller.text,
+                                        "maximal_cost": maxcost_controller.text,
+                                      },
+                                      "location": {
+                                        "value": locationSent.toString(),
+                                        "longitude": longitude_controller,
+                                        "latitude": latitude_controller
+                                      },
+                                      "deadline": {
+                                        "value": deadline?.toString(),
+                                        "day": deadline?.day,
+                                        "month": deadline?.month,
+                                        "year": deadline?.year
+                                      },
+                                      "order_image": "images/${_photo}.jpg",
+                                      "status": "open",
+                                    });
+                                    Navigator.pushNamed(context, '/order');
+                                  }
+                                }),
+                              ),
+                              TextButton(
+                                onPressed: () =>
+                                    Navigator.pop(context, 'Cancel'),
+                                child: const Text('Cancel'),
+                              ),
+                            ],
+                          );
+                        });
+                    // Validate will return true if the form is valid, or false if
+                    // the form is invalid.
+                  },
+                  child: const Text('Publish Now'),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

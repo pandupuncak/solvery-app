@@ -2,7 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:test_drive/providers/authentication.dart';
-import 'package:test_drive/providers/settings.dart';
+import 'package:test_drive/providers/palette.dart';
 import 'package:test_drive/screens/registration_page.dart';
 
 class SignInPage extends StatelessWidget {
@@ -21,7 +21,7 @@ class SignInPage extends StatelessWidget {
               Text(
                 'Tukang.in',
                 style: TextStyle(
-                  color: Settings.darkred,
+                  color: Palette.darkred,
                   fontFamily: 'DM Sans',
                   fontSize: 40,
                   letterSpacing: -0.3333333432674408,
@@ -85,7 +85,7 @@ class SignInPage extends StatelessWidget {
                   shape: MaterialStateProperty.all(RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10))),
                   backgroundColor:
-                      MaterialStateProperty.all<Color>(Settings.darkyellow),
+                      MaterialStateProperty.all<Color>(Palette.darkyellow),
                 ),
               ),
               RichText(
