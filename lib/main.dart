@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:test_drive/providers/authentication.dart';
+import 'package:test_drive/providers/settings.dart';
 import 'package:test_drive/screens/authentication_page.dart';
 import 'package:test_drive/screens/design_review_page.dart';
 import 'package:test_drive/screens/home_page.dart';
@@ -48,6 +49,33 @@ class MyApp extends StatelessWidget {
           appBarTheme: const AppBarTheme(
             backgroundColor: Colors.white,
             foregroundColor: Colors.orange,
+          ),
+          brightness: Brightness.light,
+          //primaryColor: Settings.lightyellow,
+          //backgroundColor: Settings.yellow,
+          //primaryColorDark: Settings.darkyellow,
+          colorScheme: ColorScheme(
+              background: Settings.yellow,
+              brightness: Brightness.light,
+              primary: Settings.darkred, //Button Background
+              onPrimary: Settings.yellow, //Button Text Color
+              secondary: Colors.white,
+              onSecondary: Colors.black,
+              error: Colors.black,
+              onError: Colors.white,
+              onBackground: Settings.darkred,
+              surface: Settings.yellow,
+              onSurface: Colors.black),
+          fontFamily: 'DM Sans',
+          textTheme: TextTheme(
+            headline1: TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
+            headline2: TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
+            headline3: TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+            bodyText1: TextStyle(fontWeight: FontWeight.w500, fontSize: 13),
+            bodyText2: TextStyle(fontWeight: FontWeight.w400, fontSize: 12),
+          ).apply(
+            bodyColor: Settings.darkred,
+            displayColor: Settings.darkred,
           ),
         ),
         home: AuthenticationWrapper(),

@@ -23,7 +23,10 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Tukang.in"),
+        title: Text(
+          "Tukang.in",
+          style: Theme.of(context).textTheme.headline2,
+        ),
         leading: InkWell(
           onTap: () {
             context.read<Authentication>().signOut();
@@ -38,9 +41,13 @@ class _HomePageState extends State<HomePage> {
       body: Column(
         children: [
           Container(
-            padding: EdgeInsets.all(40),
+            width: 372,
+            height: 28,
             color: Colors.white,
-            child: Text('Search Bar'),
+            child: Text(
+              'Search Bar',
+              style: Theme.of(context).textTheme.bodyText1,
+            ),
           ),
           Container(
             color: Colors.orange,
@@ -55,9 +62,13 @@ class _HomePageState extends State<HomePage> {
             child: Text(
               "Hi!",
               textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.headline1,
             ),
           ),
-          Text("Choose Service"),
+          Text(
+            "Choose Service",
+            style: Theme.of(context).textTheme.headline3,
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -78,7 +89,10 @@ class _HomePageState extends State<HomePage> {
               ),
             ],
           ),
-          Text("Advertisement"),
+          Text(
+            "Advertisement",
+            style: Theme.of(context).textTheme.headline3,
+          ),
           SizedBox(
             height: 100.0,
             child: ListView(
@@ -99,7 +113,10 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
           ),
-          Text("More Help"),
+          Text(
+            "More Help",
+            style: Theme.of(context).textTheme.headline3,
+          ),
           Container(
             color: Colors.orange,
             child: Row(

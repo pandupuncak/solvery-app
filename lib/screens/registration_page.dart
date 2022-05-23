@@ -32,10 +32,10 @@ class RegistrationPage extends StatelessWidget {
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Color.fromRGBO(197, 79, 0, 1),
-                fontFamily: 'SourceSansPro',
+                fontFamily: 'DM Sans',
                 fontSize: 40,
                 letterSpacing: -0.3333333432674408,
-                fontWeight: FontWeight.normal,
+                fontWeight: FontWeight.w700,
                 height: 1,
               ),
             ),
@@ -98,6 +98,7 @@ class RegistrationPage extends StatelessWidget {
               child: Text("Sign Up"),
             ),
           ],
+          mainAxisAlignment: MainAxisAlignment.center,
         ),
       ),
     );
