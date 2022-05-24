@@ -7,6 +7,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:test_drive/providers/orders.dart';
 import 'dart:async';
 
+import 'package:test_drive/providers/palette.dart';
+
 class DesignReviewPage extends StatefulWidget {
   @override
   State<DesignReviewPage> createState() => _DesignReviewPageState();
@@ -28,21 +30,29 @@ class _DesignReviewPageState extends State<DesignReviewPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Palette.yellow,
         leading: InkWell(
           onTap: () {
             Navigator.pop(context);
           },
           child: Icon(
             Icons.arrow_back,
-            color: Color.fromARGB(255, 242, 146, 2),
+            color: Palette.darkred,
           ),
         ),
-        title: Text("Design Inspiration"),
+        title: Text(
+          "Design Inspiration",
+          style: TextStyle(
+            color: Color.fromRGBO(197, 79, 0, 1),
+            fontWeight: FontWeight.w700,
+            fontSize: 20,
+          ),
+        ),
       ),
       body: Container(
         decoration: BoxDecoration(
           color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
         ),
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
@@ -58,30 +68,104 @@ class _DesignReviewPageState extends State<DesignReviewPage> {
                   );
                 }
 
-                return ListView(
-                  children: snapshot.data!.docs.map((document) {
-                    return Container(
-                      child: Column(
+                return Container(
+                  child: ListView(
+                    children: snapshot.data!.docs.map((document) {
+                      return Column(
                         children: [
-                          Row(
-                            children: [
-                              Text("${document['user_name']}"),
-                              //Text(document['timestamp'])
-                            ],
+                          Container(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  child: Text(
+                                    "${document['user_name']}",
+                                    style: TextStyle(
+                                      color: Color.fromRGBO(197, 79, 0, 1),
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  decoration: BoxDecoration(
+                                      color: Palette.yellow,
+                                      borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(25),
+                                          topRight: Radius.circular(25))),
+                                  alignment: Alignment.center,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    document['review_title'],
+                                    style: TextStyle(
+                                      color: Color.fromRGBO(197, 79, 0, 1),
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    document['review_text'],
+                                    style: TextStyle(
+                                      color: Color.fromRGBO(197, 79, 0, 1),
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.all(15.0),
+                                  child: RichText(
+                                    text: TextSpan(
+                                      children: [
+                                        TextSpan(
+                                            text: "Tukang: ",
+                                            style: TextStyle(
+                                              color:
+                                                  Color.fromRGBO(197, 79, 0, 1),
+                                              fontWeight: FontWeight.w400,
+                                              fontSize: 12,
+                                            )),
+                                        TextSpan(
+                                            text: "${document['tukang_name']}",
+                                            style: TextStyle(
+                                              color:
+                                                  Color.fromRGBO(197, 79, 0, 1),
+                                              fontWeight: FontWeight.w700,
+                                              fontSize: 14,
+                                            )),
+                                      ],
+                                    ),
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Palette.yellow,
+                                    borderRadius: BorderRadius.only(
+                                      bottomLeft: Radius.circular(25),
+                                      bottomRight: Radius.circular(25),
+                                    ),
+                                  ),
+                                  width: 390,
+                                ),
+                              ],
+                            ),
+                            //rpadding: EdgeInsets.symmetric(vertical: 15.0),
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                // border: Border.all(
+                                //   //color: Color.fromARGB(255, 8, 38, 63),
+                                //   //width: 3.0,
+                                // ),
+                                borderRadius: BorderRadius.circular(25)),
                           ),
-                          Text(document['review_title']),
-                          Text(document['review_text']),
-                          Text(document['tukang_name'])
+                          SizedBox(height: 25),
                         ],
-                      ),
-                      padding: EdgeInsets.all(15.0),
-                      decoration: BoxDecoration(
-                          color: Color.fromARGB(255, 170, 217, 255),
-                          border: Border.all(
-                              color: Color.fromARGB(255, 8, 38, 63),
-                              width: 3.0)),
-                    );
-                  }).toList(),
+                      );
+                    }).toList(),
+                  ),
+                  padding: EdgeInsets.all(10),
+                  decoration: BoxDecoration(color: Palette.lightyellow),
                 );
               }),
         ),

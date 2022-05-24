@@ -15,6 +15,7 @@ class SignInPage extends StatelessWidget {
       child: Scaffold(
         body: Container(
           alignment: Alignment.center,
+          padding: EdgeInsets.all(20),
           child: Column(
             children: [
               Image.asset('assets/images/logo.png'),

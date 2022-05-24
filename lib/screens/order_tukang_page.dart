@@ -8,6 +8,8 @@ import 'package:test_drive/providers/orderDetail.dart';
 import 'package:test_drive/providers/orders.dart';
 import 'dart:async';
 
+import 'package:test_drive/providers/palette.dart';
+
 class TukangsPage extends StatefulWidget {
   const TukangsPage({super.key, required this.order});
 
@@ -26,14 +28,14 @@ class _TukangsPageState extends State<TukangsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Palette.yellow,
         leading: InkWell(
           onTap: () {
             Navigator.pop(context);
           },
           child: Icon(
             Icons.arrow_back,
-            color: Color.fromARGB(255, 242, 146, 2),
+            color: Palette.darkred,
           ),
         ),
         title: Text("Order #${widget.order.id}"),
@@ -63,134 +65,158 @@ class _TukangsPageState extends State<TukangsPage> {
 
                 return ListView(
                   children: snapshot.data!.docs.map((document) {
-                    return Container(
-                      //child: Text("${document['tukang']}"),
-                      child: FutureBuilder<DocumentSnapshot>(
-                        future: FirebaseFirestore.instance
-                            .collection('tukang')
-                            .doc(document['tukang'])
-                            .get(),
-                        builder: (context,
-                            AsyncSnapshot<DocumentSnapshot> snapshot) {
-                          if (!snapshot.hasData) {
-                            return Center(
-                              child: LinearProgressIndicator(),
-                            );
-                          }
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                        //child: Text("${document['tukang']}"),
+                        child: FutureBuilder<DocumentSnapshot>(
+                          future: FirebaseFirestore.instance
+                              .collection('tukang')
+                              .doc(document['tukang'])
+                              .get(),
+                          builder: (context,
+                              AsyncSnapshot<DocumentSnapshot> snapshot) {
+                            if (!snapshot.hasData) {
+                              return Center(
+                                child: LinearProgressIndicator(),
+                              );
+                            }
 
-                          final data =
-                              snapshot.data!.data() as Map<String, dynamic>;
+                            final data =
+                                snapshot.data!.data() as Map<String, dynamic>;
 
-                          return Container(
-                            child: Column(
-                              children: [
-                                Row(
-                                  children: [
-                                    Padding(
-                                      padding:
-                                          const EdgeInsets.only(right: 50.0),
-                                      child: Text("${data['nama']}"),
-                                    ),
-                                    Container(
-                                      child: Text("${data['category']}"),
-                                      alignment: Alignment.topRight,
-                                    )
-                                  ],
-                                  mainAxisSize: MainAxisSize.max,
-                                ),
-                                Row(
-                                  children: [
-                                    Container(
-                                      child:
-                                          Text("${document['offered_price']}"),
-                                      padding: EdgeInsets.only(right: 40.0),
-                                    ),
-                                    Expanded(
-                                      child: Container(
-                                        child: ElevatedButton(
-                                          onPressed: () {
-                                            showDialog(
-                                                context: context,
-                                                builder: (context) {
-                                                  return AlertDialog(
-                                                    title: Text(
-                                                        "Confirmation Pick"),
-                                                    content: Text(
-                                                        "Are you sure you want to pick ${data['nama']}?"),
-                                                    actions: <Widget>[
-                                                      TextButton(
-                                                        child: Text("Yes"),
-                                                        onPressed: () {
-                                                          FirebaseFirestore
-                                                              .instance
-                                                              .collection(
-                                                                  'open-orders')
-                                                              .doc(widget
-                                                                  .order.id)
-                                                              .set(
-                                                                  {
-                                                                'tukang': {
-                                                                  'id': document[
-                                                                      'tukang'],
-                                                                  'nama': data[
-                                                                      'nama']
-                                                                },
-                                                                'status':
-                                                                    'tukang selected'
-                                                              },
-                                                                  SetOptions(
-                                                                      merge:
-                                                                          true));
-                                                          Navigator.pushNamed(
-                                                              context,
-                                                              '/order');
-                                                        },
-                                                      ),
-                                                      TextButton(
-                                                          onPressed: (() =>
-                                                              Navigator.pop(
-                                                                  context)),
-                                                          child: const Text(
-                                                              "Cancel"))
-                                                    ],
-                                                  );
-                                                });
-                                          },
-                                          child: const Text('Pilih Tukang'),
+                            return Container(
+                              child: Column(
+                                children: [
+                                  Row(
+                                    children: [
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(right: 50.0),
+                                        child: Text(
+                                          "${data['nama']}",
+                                          style: TextStyle(
+                                            color: Palette.darkred,
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: 18,
+                                          ),
                                         ),
-                                        alignment: Alignment.bottomRight,
                                       ),
-                                    ),
-                                  ],
-                                )
-                              ],
-                            ),
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                border: Border.all(
-                                    color: Color.fromARGB(255, 100, 23, 0))),
-                            padding: EdgeInsets.all(30),
-                          );
+                                      Container(
+                                        child: Text(
+                                          "${data['category']}",
+                                          style: TextStyle(
+                                            color: Palette.darkred,
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                        alignment: Alignment.topRight,
+                                      )
+                                    ],
+                                    mainAxisSize: MainAxisSize.max,
+                                  ),
+                                  Row(
+                                    children: [
+                                      Container(
+                                        child: Text(
+                                          "${document['offered_price']}",
+                                          style: TextStyle(
+                                            color: Palette.darkred,
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                        padding: EdgeInsets.only(right: 40.0),
+                                      ),
+                                      Expanded(
+                                        child: Container(
+                                          child: ElevatedButton(
+                                            onPressed: () {
+                                              showDialog(
+                                                  context: context,
+                                                  builder: (context) {
+                                                    return AlertDialog(
+                                                      title: Text(
+                                                          "Confirmation Pick"),
+                                                      content: Text(
+                                                          "Are you sure you want to pick ${data['nama']}?"),
+                                                      actions: <Widget>[
+                                                        TextButton(
+                                                          child: Text("Yes"),
+                                                          onPressed: () {
+                                                            FirebaseFirestore
+                                                                .instance
+                                                                .collection(
+                                                                    'open-orders')
+                                                                .doc(widget
+                                                                    .order.id)
+                                                                .set(
+                                                                    {
+                                                                  'tukang': {
+                                                                    'id': document[
+                                                                        'tukang'],
+                                                                    'nama': data[
+                                                                        'nama']
+                                                                  },
+                                                                  'status':
+                                                                      'tukang selected'
+                                                                },
+                                                                    SetOptions(
+                                                                        merge:
+                                                                            true));
+                                                            Navigator.pushNamed(
+                                                                context,
+                                                                '/order');
+                                                          },
+                                                        ),
+                                                        TextButton(
+                                                            onPressed: (() =>
+                                                                Navigator.pop(
+                                                                    context)),
+                                                            child: const Text(
+                                                                "Cancel"))
+                                                      ],
+                                                    );
+                                                  });
+                                            },
+                                            child: const Text('Pilih Tukang'),
+                                          ),
+                                          alignment: Alignment.bottomRight,
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                ],
+                              ),
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  border: Border.all(
+                                      color: Color.fromARGB(255, 100, 23, 0)),
+                                  borderRadius: BorderRadius.circular(10.0)),
+                              padding: EdgeInsets.all(30),
+                            );
 
-                          // ListView(
-                          //     children: snapshot.data!
-                          //         .data()!(
-                          //           (tukangs) {
-                          //             return Row(
-                          //               children: [],
-                          //             );
-                          //           },
-                          //         )
-                          //         .toList() as List<Widget>);
-                        },
+                            // ListView(
+                            //     children: snapshot.data!
+                            //         .data()!(
+                            //           (tukangs) {
+                            //             return Row(
+                            //               children: [],
+                            //             );
+                            //           },
+                            //         )
+                            //         .toList() as List<Widget>);
+                          },
+                        ),
+                        // decoration: BoxDecoration(
+                        //     color: Colors.white,
+                        //     border: Border.all(
+                        //         color: Colors.deepOrange,
+                        //         width: 5.0,
+                        //         style: BorderStyle.solid)),
+                        // padding: EdgeInsets.all(20.0),
                       ),
-                      // decoration: BoxDecoration(
-                      //     color: Colors.white,
-                      //     border: Border.all(
-                      //         color: Colors.deepOrange,
-                      //         width: 5.0,
-                      //         style: BorderStyle.solid)),
-                      // padding: EdgeInsets.all(20.0),
                     );
                   }).toList(),
                 );

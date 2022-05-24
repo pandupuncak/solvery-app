@@ -20,7 +20,7 @@ class RepairPage extends StatelessWidget {
       title: appTitle,
       home: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.white,
+          backgroundColor: Palette.yellow,
           leading: InkWell(
             onTap: () {
               Navigator.pop(context);
@@ -29,6 +29,11 @@ class RepairPage extends StatelessWidget {
               Icons.arrow_back,
               color: Color.fromARGB(255, 242, 146, 2),
             ),
+          ),
+          title: Text(
+            "Repair Order",
+            style: Theme.of(context).textTheme.headline1,
+            textAlign: TextAlign.center,
           ),
         ),
         body: const MyStatefulWidget(),
@@ -184,6 +189,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
           position: pos,
         );
         _markers.add(_point!);
+        print(pos.longitude);
         longitude_controller = pos.longitude;
         latitude_controller = pos.latitude;
       },
@@ -195,8 +201,9 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
       key: _formKey,
       child: Container(
         alignment: Alignment.center,
-        width: 382,
+        width: MediaQuery.of(context).size.width,
         padding: EdgeInsets.all(10),
+        decoration: BoxDecoration(color: Palette.yellow),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -231,6 +238,15 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                       selectedValue = newValue!;
                     });
                   },
+                  decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                      filled: true,
+                      fillColor: Colors.white),
+                  style: TextStyle(
+                      color: Palette.darkred,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 18),
                 ),
               ),
               Padding(
@@ -248,6 +264,14 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                 child: TextFormField(
                   decoration: const InputDecoration(
                     hintText: 'Describe your problem',
+                    hintStyle: TextStyle(
+                      color: Color.fromRGBO(197, 79, 0, 1),
+                      fontWeight: FontWeight.w500,
+                      fontSize: 14,
+                    ),
+                    border: OutlineInputBorder(),
+                    fillColor: Colors.white,
+                    filled: true,
                   ),
                   validator: (String? value) {
                     if (value == null || value.isEmpty) {
@@ -256,6 +280,11 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                     return null;
                   },
                   controller: desc_controller,
+                  style: TextStyle(
+                    color: Palette.darkred,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 14,
+                  ),
                 ),
               ),
               Padding(
@@ -277,8 +306,21 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                         keyboardType: TextInputType.number,
                         decoration: const InputDecoration(
                           hintText: "Minimal",
+                          hintStyle: TextStyle(
+                            color: Color.fromRGBO(197, 79, 0, 1),
+                            fontWeight: FontWeight.w500,
+                            fontSize: 14,
+                          ),
+                          border: OutlineInputBorder(),
+                          fillColor: Colors.white,
+                          filled: true,
                         ),
                         controller: mincost_controller,
+                        style: TextStyle(
+                          color: Palette.darkred,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 14,
+                        ),
                       ),
                     ),
                     Padding(
@@ -296,6 +338,19 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                         keyboardType: TextInputType.number,
                         decoration: const InputDecoration(
                           hintText: "Maksimal",
+                          hintStyle: TextStyle(
+                            color: Color.fromRGBO(197, 79, 0, 1),
+                            fontWeight: FontWeight.w500,
+                            fontSize: 14,
+                          ),
+                          border: OutlineInputBorder(),
+                          fillColor: Colors.white,
+                          filled: true,
+                        ),
+                        style: TextStyle(
+                          color: Palette.darkred,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 14,
                         ),
                         controller: maxcost_controller,
                       ),
@@ -343,6 +398,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                   ],
                 ),
               ),
+              //Text("$longitude_controller"),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
@@ -355,11 +411,22 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
               ),
               DateTimeFormField(
                 decoration: const InputDecoration(
-                  hintStyle: TextStyle(color: Colors.black45),
+                  hintStyle: TextStyle(
+                    color: Color.fromRGBO(197, 79, 0, 1),
+                    fontWeight: FontWeight.w500,
+                    fontSize: 14,
+                  ),
                   errorStyle: TextStyle(color: Colors.redAccent),
                   border: OutlineInputBorder(),
                   suffixIcon: Icon(Icons.event_note),
-                  labelText: 'Only time',
+                  labelText: 'Only day',
+                  fillColor: Colors.white,
+                  filled: true,
+                ),
+                dateTextStyle: TextStyle(
+                  color: Palette.darkred,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 14,
                 ),
                 mode: DateTimeFieldPickerMode.date,
                 autovalidateMode: AutovalidateMode.always,
@@ -384,40 +451,41 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
                   children: [
-                    InkWell(
-                      child: Icon(
-                        Icons.browse_gallery,
-                        size: 100,
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: InkWell(
+                        child: Icon(
+                          Icons.upload_sharp,
+                          size: 60,
+                        ),
+                        onTap: () {
+                          _getFromGallery();
+                          // print(_photo?.path);
+                          // _addImageWidget();
+                          //UploadFile();
+                        },
+                        customBorder: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
                       ),
-                      onTap: () {
-                        _getFromGallery();
-                        // print(_photo?.path);
-                        // _addImageWidget();
-                        //UploadFile();
-                      },
-                      customBorder: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)),
                     ),
                     Container(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: SizedBox(
-                          height: 100,
-                          width: 200,
-                          child: ListView.builder(
-                            itemCount: _imageList.length,
-                            scrollDirection: Axis.horizontal,
-                            itemBuilder: ((context, index) {
-                              return _imageList[index];
-                            }),
-                          ),
+                      child: SizedBox(
+                        height: 100,
+                        width: 200,
+                        child: ListView.builder(
+                          itemCount: _imageList.length,
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: ((context, index) {
+                            return _imageList[index];
+                          }),
                         ),
                       ),
                       decoration: BoxDecoration(
                           border: Border.all(
-                        color: Palette.darkred,
-                        style: BorderStyle.solid,
-                      )),
+                            color: Palette.darkred,
+                            style: BorderStyle.solid,
+                          ),
+                          borderRadius: BorderRadius.circular(10)),
                       padding: EdgeInsets.all(10),
                     ),
                   ],
